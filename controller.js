@@ -37,7 +37,7 @@ exports.importRaster = {
                     }
                 ],
                 function () {
-                    var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/image" --data-binary @' + path + ' http://127.0.0.1/geoserver/rest/workspaces/scale/datastores/products/' + name;
+                    var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: image/tiff" @' + path + ' http://127.0.0.1/geoserver/rest/workspaces/scale/datastores/products/' + name;
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
