@@ -27,7 +27,7 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: text/plain" -d --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + name + '/external.geotiff';
+                var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: multipart/form-data" -d --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + name.split('.')[0] + '/external.geotiff';
                 //var cmd = 'raster2pgsql -s 4326 -I -C -M ' + path + ' -F public.products | psql -d scale';
                 exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                     if (error) {
