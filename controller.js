@@ -1,7 +1,8 @@
 var boom = require('boom'),
     hapi = require('hapi'),
     fs = require('fs'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    async = require('async');
 
 exports.importRaster = {
     payload: {
@@ -26,26 +27,26 @@ exports.importRaster = {
 
             data.file.pipe(file);
 
-            var createWorkspace = function () {
-                exec('curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces/');
-            };
-
-            var moveFile = function () {
-                exec('sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data');
-            };
-
             data.file.on('end', function () {
                 //var cmd = 'curl -v -u admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/scale/external.geotiff';
                 //var cmd = 'raster2pgsql -s 4326 -I -C -M ' + path + ' -F public.products | psql -d scale';
-                createWorkspace();
-                moveFile();
-                var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/octet-stream" --data-binary @' + name + ' http://localhost/geoserver/rest/workspaces/scale/datastores/products/' + name;
-                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                    if (error) {
-                        reply(boom.expectationFailed(error, stderr));
+                async.series([
+                    function () {
+                        exec('curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces/');
+                    },
+                    function () {
+                        exec('sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data');
+                    },
+                    function () {
+                        var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/octet-stream" --data-binary @' + name + ' http://localhost/geoserver/rest/workspaces/scale/datastores/products/' + name;
+                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            }
+                            reply('Success' + JSON.stringify(stdout));
+                        });
                     }
-                    reply('Success' + JSON.stringify(stdout));
-                });
+                ]);
             });
         }
     }
