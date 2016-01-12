@@ -27,7 +27,7 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var cmd = 'raster2pgsql -s 4326 -I -C -M uploads/' + data.file.hapi.filename + ' -F -t 100x100 public.products | psql -d scale';
+                var cmd = 'curl --form "file=@' + path + ' http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/viirs-dnb/external.imagemosaic';
                 exec(cmd, function (error, stdout) {
                     if (error) {
                         reply(boom.badImplementation(error)); // 500 error
