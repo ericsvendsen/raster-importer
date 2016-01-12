@@ -1,26 +1,15 @@
-var Path = require('path'),
-    Hapi = require('hapi'),
-    Routes = require('./routes');
+var hapi = require('hapi'),
+    routes = require('./routes');
 
 // Create a server with a host and port
-var server = new Hapi.Server();
-
-//server.register([require('vision'), require('inert')], function (err) {
-//    server.views({
-//        engines: {
-//            html: require('handlebars')
-//        },
-//        relativeTo: __dirname,
-//        path: './templates'
-//    });
-//});
+var server = new hapi.Server();
 
 server.connection({
     host: 'localhost',
     port: 9000
 });
 
-server.route(Routes.endpoints);
+server.route(routes.endpoints);
 
 // Start the server
 server.start(function () {

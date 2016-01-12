@@ -1,5 +1,6 @@
 # Dependency directories
 node_modules
 
-# Editor files
+# Misc files
 .idea
+.DS_Store

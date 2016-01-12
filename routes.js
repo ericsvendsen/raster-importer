@@ -2,8 +2,8 @@ var Controller = require('./controller');
 
 exports.endpoints = [
     {
-        method: 'GET',
-        path: '/api/testendpoint',
-        config: Controller.testEndpoint
+        method: 'POST',
+        path: '/importraster',
+        config: Controller.importRaster
     }
 ];
