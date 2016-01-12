@@ -1,6 +1,7 @@
 var boom = require('boom'),
     hapi = require('hapi'),
-    fs = require('fs');
+    fs = require('fs'),
+    exec = require('child_process').exec;
 
 exports.importRaster = {
     payload: {
@@ -26,11 +27,13 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var ret = {
-                    filename: data.file.hapi.filename,
-                    headers: data.file.hapi.headers
-                };
-                reply(JSON.stringify(ret));
+                var cmd = 'raster2pgsql -s 4326 -I -C -M uploads/' + data.file.hapi.filename + ' -F -t 100x100 public.products | psql -d scale';
+                exec(cmd, function (error, stdout) {
+                    if (error) {
+                        reply(boom.badImplementation(error)); // 500 error
+                    }
+                    reply(JSON.stringify(stdout));
+                });
             });
         }
     }
