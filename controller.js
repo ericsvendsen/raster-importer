@@ -34,14 +34,10 @@ exports.importRaster = {
                     function (callback) {
                         exec('curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://127.0.0.1/geoserver/rest/workspaces/');
                         callback();
-                    },
-                    function (callback) {
-                        exec('sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data');
-                        callback();
                     }
                 ],
                 function () {
-                    var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/octet-stream" --data-binary @/data/' + name + ' http://127.0.0.1/geoserver/rest/workspaces/scale/datastores/products/' + name;
+                    var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/octet-stream" --data-binary @' + path + ' http://127.0.0.1/geoserver/rest/workspaces/scale/datastores/products/' + name;
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
