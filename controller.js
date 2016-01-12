@@ -27,7 +27,8 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var cmd = 'curl --user admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/scale/external.imagemosaic';
+                //var cmd = 'curl --user admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/viirs-dnb/external.imagemosaic';
+                var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/octet-stream" "file=@' + path + '" http://localhost:8080/geoserver/rest/workspaces/scale/datastores/products/' + name;
                 exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                     if (error) {
                         reply(boom.expectationFailed(error, stderr));
