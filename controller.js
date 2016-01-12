@@ -1,8 +1,7 @@
 var boom = require('boom'),
     hapi = require('hapi'),
     fs = require('fs'),
-    exec = require('child_process').exec,
-    twoStep = require('two-step');
+    exec = require('child_process').exec;
 
 exports.importRaster = {
     payload: {
@@ -28,20 +27,13 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var start = function () {
-                    twoStep(
-                        function() {
-                            exec('raster2pgsql -s 4326 -I -C -M uploads/' + data.file.hapi.filename + ' -F -t 100x100 public.products > tempdata.sql');
-                            exec('psql -c "CREATE DATABASE scale;"');
-                            exec('psql -c "CREATE EXTENSION postgis;" scale');
-                            exec('psql -f tempdata.sql scale');
-                        },
-                        function (err, stdout) {
-                            reply(JSON.stringify(stdout));
-                        }
-                    );
-                };
-                start();
+                var cmd = 'raster2pgsql -s 4326 -I -C -M uploads/' + data.file.hapi.filename + ' -F -t 100x100 public.products | psql -d scale';
+                exec(cmd, function (error, stdout) {
+                    if (error) {
+                        reply(boom.badImplementation(error)); // 500 error
+                    }
+                    reply(JSON.stringify(stdout));
+                });
             });
         }
     }
