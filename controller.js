@@ -32,7 +32,7 @@ exports.importRaster = {
                     if (error) {
                         reply(boom.expectationFailed(error, stderr));
                     }
-                    reply(boom.create(200, 'OK', { message: stdout }));
+                    reply(JSON.stringify(stdout));
                 });
             });
         }
