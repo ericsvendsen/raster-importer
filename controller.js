@@ -21,16 +21,16 @@ exports.importRaster = {
 
             file.on('error', function (err) {
                 console.error(err);
-                reply(boom.badImplementation(err)); // 500 error
+                reply(boom.expectationFailed(err));
             });
 
             data.file.pipe(file);
 
             data.file.on('end', function () {
                 var cmd = 'curl --form "file=@' + path + ' http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/viirs-dnb/external.imagemosaic';
-                exec(cmd, function (error, stdout) {
+                exec(cmd, function (error, stdout, stderr) {
                     if (error) {
-                        reply(boom.badImplementation(error)); // 500 error
+                        reply(boom.expectationFailed(error, stderr));
                     }
                     reply(JSON.stringify(stdout));
                 });
