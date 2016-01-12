@@ -8,4 +8,4 @@ App for importing raster images into geoserver
 * Replace [PORT] with 9000 (if accessing node process directly) or another value (if node is running behind a reverse proxy)
 
 **Example**
-    curl --form "file=@path/to/myfile.tif" http://localhost:9000/importraster
+*    curl --form "file=@path/to/myfile.tif" http://localhost:9000/importraster
