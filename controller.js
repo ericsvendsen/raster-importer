@@ -28,7 +28,7 @@ exports.importRaster = {
 
             data.file.on('end', function () {
                 var cmd = 'curl --user admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/viirs-dnb/external.imagemosaic';
-                exec(cmd, function (error, stderr, stdout) {
+                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                     if (error) {
                         reply(boom.expectationFailed(error, stderr));
                     }
