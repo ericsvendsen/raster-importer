@@ -40,19 +40,19 @@ exports.importRaster = {
                             }
                         });
                         callback();
-                    },
-                    function (callback) {
-                        cmd = 'sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data';
-                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                            if (error) {
-                                reply(boom.expectationFailed(error, stderr));
-                            }
-                        });
-                        callback();
                     }
+                    //function (callback) {
+                    //    cmd = 'sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data';
+                    //    exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                    //        if (error) {
+                    //            reply(boom.expectationFailed(error, stderr));
+                    //        }
+                    //    });
+                    //    callback();
+                    //}
                 ],
                 function () {
-                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file:///data/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff';
+                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file:~/raster-importer/uploads/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff';
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
