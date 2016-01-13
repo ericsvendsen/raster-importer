@@ -2,7 +2,8 @@ var boom = require('boom'),
     hapi = require('hapi'),
     fs = require('fs'),
     exec = require('child_process').exec,
-    async = require('async');
+    async = require('async'),
+    zip = require('zip');
 
 exports.importRaster = {
     payload: {
@@ -18,6 +19,7 @@ exports.importRaster = {
         if (data.file) {
             var name = data.file.hapi.filename,
                 path = __dirname + '/uploads/' + name,
+                zipPath = __dirname + '/uploads/' + name.split('.')[0] + '.zip',
                 file = fs.createWriteStream(path);
 
             file.on('error', function (err) {
@@ -28,12 +30,26 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                //var cmd = 'curl -v -u admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/scale/external.geotiff';
-                //var cmd = 'raster2pgsql -s 4326 -I -C -M ' + path + ' -F public.products | psql -d scale';
+                // zip file
+                zip.file(path);
+                var data = zip.generate({ base64: false, compression:'DEFLATE' });
+                fs.writeFileSync(zipPath, data, 'binary');
+
                 var cmd = '';
                 async.series([
+                    // create workspace
                     function (callback) {
-                        cmd = 'curl -u admin:geoserver -v -XPOST -H "Content-Type: application/xml" -d "<coverageStore><name>products</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
+                        exec(cmd, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            }
+                        });
+                        callback();
+                    },
+                    // create datastore
+                    function (callback) {
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>products</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
@@ -41,18 +57,9 @@ exports.importRaster = {
                         });
                         callback();
                     }
-                    //function (callback) {
-                    //    cmd = 'sudo mv uploads/' + name + ' ~/dataviz-nov2015/geoserver_data/data';
-                    //    exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                    //        if (error) {
-                    //            reply(boom.expectationFailed(error, stderr));
-                    //        }
-                    //    });
-                    //    callback();
-                    //}
                 ],
                 function () {
-                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file:~/raster-importer/uploads/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff';
+                    cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @' + zipPath + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/file.geotiff';
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
