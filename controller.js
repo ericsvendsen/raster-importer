@@ -42,7 +42,7 @@ exports.importRaster = {
                         callback();
                     },
                     function (callback) {
-                        cmd = 'curl -u admin:geoserver -F name=test -F filedata=@' + path + ' "http://localhost/geoserver/rest/imports/0/tasks"'
+                        cmd = 'curl -u admin:geoserver -F name=test -F filedata=@uploads/' + name + ' "http://localhost/geoserver/rest/imports/0/tasks"'
                         exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
