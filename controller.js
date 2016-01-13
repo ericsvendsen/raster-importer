@@ -19,7 +19,7 @@ exports.importRaster = {
         if (data.file) {
             var name = data.file.hapi.filename,
                 path = __dirname + '/uploads/' + name,
-                zipPath = __dirname + '/uploads/' + name.split('.')[0] + '.zip',
+                zipPath = 'uploads/' + name.split('.')[0] + '.zip',
                 file = fs.createWriteStream(path);
 
             file.on('error', function (err) {
@@ -31,7 +31,7 @@ exports.importRaster = {
 
             data.file.on('end', function () {
                 // zip file
-                zip.file(path);
+                zip.file('uploads/' + name);
                 var data = zip.generate({ base64: false, compression:'DEFLATE' });
                 fs.writeFileSync(zipPath, data, 'binary');
 
