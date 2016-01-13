@@ -3,7 +3,7 @@ var boom = require('boom'),
     fs = require('fs'),
     exec = require('child_process').exec,
     async = require('async'),
-    zip = require('zip');
+    zip = require('node-zip');
 
 exports.importRaster = {
     payload: {
