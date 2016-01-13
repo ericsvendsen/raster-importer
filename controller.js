@@ -43,7 +43,7 @@ exports.importRaster = {
                     },
                     // create datastore
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>products</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + name.split('.')[0] + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
@@ -65,7 +65,7 @@ exports.importRaster = {
                     }
                 ],
                 function () {
-                    cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + name.split('.')[0] + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/file.geotiff';
+                    cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + name.split('.')[0] + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + name.split('.')[0] + '/file.geotiff';
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
