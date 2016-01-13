@@ -30,15 +30,30 @@ exports.importRaster = {
             data.file.on('end', function () {
                 //var cmd = 'curl -v -u admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/scale/external.geotiff';
                 //var cmd = 'raster2pgsql -s 4326 -I -C -M ' + path + ' -F public.products | psql -d scale';
+                var cmd = '';
                 async.series([
                     function (callback) {
-                        exec('curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces/');
+                        cmd = 'curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d { "import": { "targetWorkspace": { "workspace": { "name": "scale" } } } } "http://localhost/geoserver/rest/imports"';
+                        exec(cmd, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            }
+                        });
+                        callback();
+                    },
+                    function (callback) {
+                        cmd = 'curl -u admin:geoserver -F name=test -F filedata=@' + path + ' "http://localhost/geoserver/rest/imports/0/tasks"'
+                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            }
+                        });
                         callback();
                     }
                 ],
                 function () {
-                    var cmd = 'curl -v -u admin:geoserver --form "file=@' + path + '" http://localhost/geoserver/rest/workspaces/scale/datastores/products/' + name;
-                    exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                    cmd = 'curl -u admin:geoserver -XPOST "http://localhost/geoserver/rest/imports/0"';
+                    exec(cmd, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         }
