@@ -33,17 +33,8 @@ exports.importRaster = {
                 var cmd = '';
                 async.series([
                     function (callback) {
-                        cmd = 'curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d { "import": { "targetWorkspace": { "workspace": { "name": "scale" } } } } "http://localhost/geoserver/rest/imports"';
+                        cmd = 'curl -u admin:geoserver -v -XPOST -H "Content-Type: application/xml" -d "<coverageStore><name>products</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                         exec(cmd, function (error, stderr, stdout) {
-                            if (error) {
-                                reply(boom.expectationFailed(error, stderr));
-                            }
-                        });
-                        callback();
-                    },
-                    function (callback) {
-                        cmd = 'curl -u admin:geoserver -F name=test -F filedata=@uploads/' + name + ' "http://localhost/geoserver/rest/imports/0/tasks"'
-                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
                             }
@@ -52,7 +43,7 @@ exports.importRaster = {
                     }
                 ],
                 function () {
-                    cmd = 'curl -u admin:geoserver -XPOST "http://localhost/geoserver/rest/imports/0"';
+                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file:uploads/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff?configure=first\&coverageName=' + name.split('.')[0];
                     exec(cmd, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
