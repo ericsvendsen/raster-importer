@@ -43,7 +43,7 @@ exports.importRaster = {
                     }
                 ],
                 function () {
-                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file:uploads/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff?configure=first\&coverageName=' + name.split('.')[0];
+                    cmd = 'curl -u admin:geoserver -v -XPUT -H "Content-type: text/plain" -d "file=@uploads/' + name + '" http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/external.geotiff?configure=first\&coverageName=' + name.split('.')[0];
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
