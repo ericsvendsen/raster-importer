@@ -17,6 +17,7 @@ exports.importRaster = {
 
         if (data.file) {
             var name = data.file.hapi.filename,
+                zipName = name.split('.')[0],
                 path = __dirname + '/uploads/' + name,
                 file = fs.createWriteStream(path);
 
@@ -43,7 +44,7 @@ exports.importRaster = {
                     },
                     // create datastore
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + name.split('.')[0] + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + zipName + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
@@ -54,7 +55,7 @@ exports.importRaster = {
                     },
                     // zip file
                     function (callback) {
-                        cmd = 'zip uploads/' + name.split('.')[0] + '.zip uploads/' + name;
+                        cmd = 'zip uploads/' + zipName + '.zip uploads/' + name;
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
@@ -62,15 +63,27 @@ exports.importRaster = {
                                 callback();
                             }
                         });
+                    },
+                    // upload file
+                    function (callback) {
+                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + zipName + '/file.geotiff';
+                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback(null, stdout);
+                            }
+                        });
                     }
                 ],
-                function () {
-                    cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + name.split('.')[0] + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + name.split('.')[0] + '/file.geotiff';
-                    exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                function (err, results) {
+                    // cleanup
+                    cmd = 'sudo rm uploads/' + name + ' && sudo rm uploads/' + zipName + '.zip';
+                    exec(cmd, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
-                            reply(JSON.stringify(stdout));
+                            reply(JSON.stringify(results));
                         }
                     });
                 });
