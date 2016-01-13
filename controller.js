@@ -2,8 +2,7 @@ var boom = require('boom'),
     hapi = require('hapi'),
     fs = require('fs'),
     exec = require('child_process').exec,
-    async = require('async'),
-    zip = new require('node-zip')();
+    async = require('async');
 
 exports.importRaster = {
     payload: {
@@ -19,7 +18,6 @@ exports.importRaster = {
         if (data.file) {
             var name = data.file.hapi.filename,
                 path = __dirname + '/uploads/' + name,
-                zipPath = 'uploads/' + name.split('.')[0] + '.zip',
                 file = fs.createWriteStream(path);
 
             file.on('error', function (err) {
@@ -30,11 +28,6 @@ exports.importRaster = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                // zip file
-                zip.file('uploads/' + name);
-                var data = zip.generate({ base64: false, compression:'DEFLATE' });
-                fs.writeFileSync(zipPath, data, 'binary');
-
                 var cmd = '';
                 async.series([
                     // create workspace
@@ -51,6 +44,17 @@ exports.importRaster = {
                     // create datastore
                     function (callback) {
                         cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>products</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                        exec(cmd, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback();
+                            }
+                        });
+                    },
+                    // zip file
+                    function (callback) {
+                        cmd = 'zip uploads/' + name.split('.')[0] + '.zip uploads/' + name;
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
