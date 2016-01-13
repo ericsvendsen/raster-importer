@@ -61,6 +61,7 @@ exports.importRaster = {
                     }
                 ],
                 function () {
+                    console.log(zipPath);
                     cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @' + zipPath + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/products/file.geotiff';
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
