@@ -3,7 +3,7 @@ var boom = require('boom'),
     fs = require('fs'),
     exec = require('child_process').exec,
     async = require('async'),
-    zip = require('node-zip');
+    zip = new require('node-zip')();
 
 exports.importRaster = {
     payload: {
@@ -43,9 +43,10 @@ exports.importRaster = {
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback();
                             }
                         });
-                        callback();
                     },
                     // create datastore
                     function (callback) {
@@ -53,9 +54,10 @@ exports.importRaster = {
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback();
                             }
                         });
-                        callback();
                     }
                 ],
                 function () {
@@ -63,8 +65,9 @@ exports.importRaster = {
                     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
+                        } else {
+                            reply(JSON.stringify(stdout));
                         }
-                        reply(JSON.stringify(stdout));
                     });
                 });
             });
