@@ -19,7 +19,8 @@ exports.importRaster = {
             var name = data.file.hapi.filename,
                 zipName = name.split('.')[0],
                 path = __dirname + '/uploads/' + name,
-                file = fs.createWriteStream(path);
+                file = fs.createWriteStream(path),
+                layer = data.layer;
 
             file.on('error', function (err) {
                 console.error(err);
@@ -44,7 +45,7 @@ exports.importRaster = {
                     },
                     // create datastore
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + zipName + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.layer + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                         exec(cmd, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
@@ -66,7 +67,7 @@ exports.importRaster = {
                     },
                     // upload file
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + zipName + '/file.geotiff';
+                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.layer + '/file.geotiff';
                         exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
