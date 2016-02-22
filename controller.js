@@ -67,7 +67,7 @@ exports.importRaster = {
                     },
                     // upload file
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.layer + '/file.geotiff';
+                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.layer + '/' + data.layer + '.geotiff';
                         exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
