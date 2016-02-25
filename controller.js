@@ -32,17 +32,17 @@ exports.importRaster = {
             data.file.on('end', function () {
                 var cmd = '';
                 async.series([
-                    // create workspace
-                    function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
-                        exec(cmd, function (error, stderr, stdout) {
-                            if (error) {
-                                reply(boom.expectationFailed(error, stderr));
-                            } else {
-                                callback();
-                            }
-                        });
-                    },
+                    // // create workspace
+                    // function (callback) {
+                    //     cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
+                    //     exec(cmd, function (error, stderr, stdout) {
+                    //         if (error) {
+                    //             reply(boom.expectationFailed(error, stderr));
+                    //         } else {
+                    //             callback();
+                    //         }
+                    //     });
+                    // },
                     // create datastore
                     function (callback) {
                         cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.layer + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
