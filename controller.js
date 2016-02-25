@@ -130,7 +130,7 @@ exports.createMosaic = {
                 }
             ],
             function (err, results) {
-                reply(boom.expectationFailed(err));
+                reply(boom.expectationFailed(err, results));
             });
         }
     }
