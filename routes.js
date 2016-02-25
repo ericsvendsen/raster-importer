@@ -12,8 +12,8 @@ exports.endpoints = [
         config: Controller.createMosaic
     },
     {
-        method: 'PUT',
-        path: '/mosaic',
+        method: 'POST',
+        path: '/mosaic/update',
         config: Controller.updateMosaic
     }
 ];
