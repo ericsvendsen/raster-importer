@@ -193,7 +193,8 @@ exports.updateMosaic = {
                     if (error) {
                         reply(boom.expectationFailed(error, stderr));
                     } else {
-                        callback(null, stdout);
+                        console.log(stdout);
+                        reply();
                     }
                 });
             });
