@@ -189,7 +189,7 @@ exports.updateMosaic = {
                 async.series([
                     // upload file
                     function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic + '/external.imagemosaic';
+                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: text/plain" --data-binary @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic + '/external.imagemosaic';
                         exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
                             if (error) {
                                 reply(boom.expectationFailed(error, stderr));
