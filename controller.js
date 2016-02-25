@@ -184,33 +184,12 @@ exports.updateMosaic = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                var cmd = '';
-                async.series([
-                    // upload file
-                    function (callback) {
-                        cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: text/plain" --data-binary @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic + '/external.imagemosaic';
-                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                            if (error) {
-                                reply(boom.expectationFailed(error, stderr));
-                            } else {
-                                callback(null, stdout);
-                            }
-                        });
-                    }
-                ],
-                function (err, results) {
-                    if (err) {
+                var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: text/plain" --data-binary @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic + '/external.imagemosaic';
+                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                    if (error) {
                         reply(boom.expectationFailed(error, stderr));
                     } else {
-                        // cleanup
-                        cmd = 'sudo rm uploads/' + name;
-                        exec(cmd, function (error, stderr, stdout) {
-                            if (error) {
-                                reply(boom.expectationFailed(error, stderr));
-                            } else {
-                                reply(JSON.stringify(results));
-                            }
-                        });
+                        callback(null, stdout);
                     }
                 });
             });
