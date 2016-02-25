@@ -96,14 +96,14 @@ exports.importRaster = {
 exports.createMosaic = {
     payload: {
         output: 'data',
-        parse: false,
-        allow: 'text/plain',
+        parse: true,
+        allow: 'multipart/form-data',
         maxBytes: 314572800 // 300mb
     },
     handler: function (request, reply) {
         var data = request.payload;
 
-        if (data.layer) {
+        if (data.mosaic) {
             var cmd = '';
             async.series([
                 // create workspace
@@ -119,7 +119,7 @@ exports.createMosaic = {
                 },
                 // create datastore
                 function (callback) {
-                    cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.layer + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                    cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                     exec(cmd, function (error, stderr, stdout) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
