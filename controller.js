@@ -104,6 +104,7 @@ exports.createMosaic = {
         var data = request.payload;
 
         if (data.mosaic) {
+            console.log(data.mosaic);
             var cmd = '';
             async.series([
                 // create workspace
