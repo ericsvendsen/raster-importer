@@ -169,7 +169,7 @@ exports.updateMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
-        console.log(data);
+        console.log(data.file);
 
         if (data.file) {
             var name = data.file.hapi.filename,
