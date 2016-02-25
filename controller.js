@@ -97,7 +97,7 @@ exports.createMosaic = {
     payload: {
         output: 'data',
         parse: true,
-        allow: 'text/plain',
+        allow: 'application/octet-stream',
         maxBytes: 314572800 // 300mb
     },
     handler: function (request, reply) {
