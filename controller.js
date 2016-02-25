@@ -170,7 +170,6 @@ exports.updateMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
-        console.log(data.file);
 
         if (data.file) {
             var name = data.file.hapi.filename,
@@ -186,7 +185,6 @@ exports.updateMosaic = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                console.log(data.mosaic);
                 var cmd = 'curl -v -u admin:geoserver -XPUT -H "Content-type: text/plain" --data-binary @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic + '/external.imagemosaic';
                 console.log(cmd);
                 exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
@@ -194,6 +192,7 @@ exports.updateMosaic = {
                         reply(boom.expectationFailed(error, stderr));
                     } else {
                         console.log(stdout);
+                        console.log(stderr);
                         reply();
                     }
                 });
