@@ -108,6 +108,9 @@ exports.createMosaic = {
                 function (callback) {
                     cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
                     exec(cmd, function (error, stderr, stdout) {
+                        console.log(error);
+                        console.log(stderr);
+                        console.log(stdout);
                         callback();
                     });
                 },
@@ -115,6 +118,9 @@ exports.createMosaic = {
                 function (callback) {
                     cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                     exec(cmd, function (error, stderr, stdout) {
+                        console.log(error);
+                        console.log(stderr);
+                        console.log(stdout);
                         callback();
                     });
                 }
