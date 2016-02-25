@@ -130,7 +130,9 @@ exports.createMosaic = {
                 }
             ],
             function (err, results) {
-                reply(boom.expectationFailed(err, results));
+                reply(boom.expectationFailed(err));
+                console.log('Error: ' + err);
+                console.log('Results: ' + results);
             });
         }
     }
