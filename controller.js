@@ -100,41 +100,29 @@ exports.createMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
-        console.log(data);
 
-        // if (data.mosaic) {
-        //     console.log(data.mosaic);
-        //     var cmd = '';
-        //     async.series([
-        //         // create workspace
-        //         function (callback) {
-        //             cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
-        //             exec(cmd, function (error, stderr, stdout) {
-        //                 if (error) {
-        //                     reply(boom.expectationFailed(error, stderr));
-        //                 } else {
-        //                     callback();
-        //                 }
-        //             });
-        //         },
-        //         // create datastore
-        //         function (callback) {
-        //             cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
-        //             exec(cmd, function (error, stderr, stdout) {
-        //                 if (error) {
-        //                     reply(boom.expectationFailed(error, stderr));
-        //                 } else {
-        //                     callback();
-        //                 }
-        //             });
-        //         }
-        //     ],
-        //     function (err, results) {
-        //         reply(boom.expectationFailed(err));
-        //         console.log('Error: ' + err);
-        //         console.log('Results: ' + results);
-        //     });
-        // }
+        if (data.mosaic) {
+            var cmd = '';
+            async.series([
+                // create workspace
+                function (callback) {
+                    cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
+                    exec(cmd, function (error, stderr, stdout) {
+                        callback();
+                    });
+                },
+                // create datastore
+                function (callback) {
+                    cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                    exec(cmd, function (error, stderr, stdout) {
+                        callback();
+                    });
+                }
+            ],
+            function (err, results) {
+                reply(boom.expectationFailed(err));
+            });
+        }
     }
 };
 
