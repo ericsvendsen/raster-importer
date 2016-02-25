@@ -96,8 +96,8 @@ exports.importRaster = {
 exports.createMosaic = {
     payload: {
         output: 'data',
-        parse: true,
-        allow: 'application/octet-stream',
+        parse: false,
+        allow: 'text/plain',
         maxBytes: 314572800 // 300mb
     },
     handler: function (request, reply) {
