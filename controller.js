@@ -175,8 +175,9 @@ exports.updateMosaic = {
         if (data.file) {
             var name = data.file.hapi.filename,
                 path = __dirname + '/uploads/' + name,
-                file = fs.createWriteStream(path),
-                mosaic = data.mosaic;
+                file = fs.createWriteStream(path);
+
+            data.mosaic = 'test';
 
             file.on('error', function (err) {
                 console.log(err);
