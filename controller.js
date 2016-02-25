@@ -165,6 +165,7 @@ exports.updateMosaic = {
     payload: {
         output: 'stream',
         parse: true,
+        allow: 'multipart/form-data',
         maxBytes: 314572800 // 300mb
     },
     handler: function (request, reply) {
