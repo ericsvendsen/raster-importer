@@ -192,7 +192,6 @@ exports.updateMosaic = {
                         reply(boom.expectationFailed(error, stderr));
                     } else {
                         console.log(stdout);
-                        console.log(stderr);
                         reply();
                     }
                 });
