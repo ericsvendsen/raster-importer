@@ -169,6 +169,7 @@ exports.updateMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
+        console.log(data);
 
         if (data.file) {
             var name = data.file.hapi.filename,
@@ -177,7 +178,7 @@ exports.updateMosaic = {
                 mosaic = data.mosaic;
 
             file.on('error', function (err) {
-                console.error(err);
+                console.log(err);
                 reply(boom.expectationFailed(err));
             });
 
