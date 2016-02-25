@@ -154,7 +154,7 @@ exports.createMosaic = {
                 if (err) {
                     reply(boom.expectationFailed(err));
                 } else {
-                    reply.end();
+                    reply();
                 }
             });
         }
