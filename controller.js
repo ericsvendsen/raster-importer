@@ -200,15 +200,19 @@ exports.updateMosaic = {
                     }
                 ],
                 function (err, results) {
-                    // cleanup
-                    cmd = 'sudo rm uploads/' + name;
-                    exec(cmd, function (error, stderr, stdout) {
-                        if (error) {
-                            reply(boom.expectationFailed(error, stderr));
-                        } else {
-                            reply(JSON.stringify(results));
-                        }
-                    });
+                    if (err) {
+                        reply(boom.expectationFailed(error, stderr));
+                    } else {
+                        // cleanup
+                        cmd = 'sudo rm uploads/' + name;
+                        exec(cmd, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                reply(JSON.stringify(results));
+                            }
+                        });
+                    }
                 });
             });
         }
