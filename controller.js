@@ -3,7 +3,7 @@ var boom = require('boom'),
     fs = require('fs'),
     exec = require('child_process').exec,
     async = require('async'),
-    requestlib = require('request');
+    noderequest = require('request');
 
 exports.importRaster = {
     payload: {
@@ -107,7 +107,7 @@ exports.createMosaic = {
             async.series([
                 // check if workspace exists
                 function (callback) {
-                    requestlib('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale', function (error, response, body) {
+                    noderequest('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale', function (error, response, body) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
@@ -129,7 +129,7 @@ exports.createMosaic = {
                 },
                 // check if coveragestore exists
                 function (callback) {
-                    requestlib('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic, function (error, response, body) {
+                    noderequest('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic, function (error, response, body) {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
@@ -154,7 +154,7 @@ exports.createMosaic = {
                 if (err) {
                     reply(boom.expectationFailed(err));
                 } else {
-                    console.log(results);
+                    reply.end();
                 }
             });
         }
