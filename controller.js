@@ -101,8 +101,6 @@ exports.createMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
-        var workspaceExists = false;
-        var coverageStoreExists = false;
 
         if (data.mosaic) {
             var cmd = '';
@@ -113,8 +111,8 @@ exports.createMosaic = {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
-                            workspaceExists = response.statusCode === 200;
-                            if (!workspaceExists) {
+                            console.log(response.statusCode);
+                            if (response.statusCode !== 200) {
                                 // create workspace
                                 cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
                                 exec(cmd, function (error, stderr, stdout) {
@@ -136,8 +134,8 @@ exports.createMosaic = {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
-                            coverageStoreExists = response.statusCode === 200;
-                            if (!coverageStoreExists) {
+                            console.log(response.statusCode);
+                            if (response.statusCode !== 200) {
                                 // create coveragestore
                                 cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
                                 exec(cmd, function (error, stderr, stdout) {
