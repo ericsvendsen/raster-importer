@@ -111,7 +111,6 @@ exports.createMosaic = {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
-                            console.log(response.statusCode);
                             if (response.statusCode !== 200) {
                                 // create workspace
                                 cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
@@ -134,7 +133,6 @@ exports.createMosaic = {
                         if (error) {
                             reply(boom.expectationFailed(error, stderr));
                         } else {
-                            console.log(response.statusCode);
                             if (response.statusCode !== 200) {
                                 // create coveragestore
                                 cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
@@ -153,7 +151,11 @@ exports.createMosaic = {
                 }
             ],
             function (err, results) {
-                reply(boom.expectationFailed(err));
+                if (err) {
+                    reply(boom.expectationFailed(err));
+                } else {
+                    console.log(results);
+                }
             });
         }
     }
