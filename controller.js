@@ -2,7 +2,8 @@ var boom = require('boom'),
     hapi = require('hapi'),
     fs = require('fs'),
     exec = require('child_process').exec,
-    async = require('async');
+    async = require('async'),
+    request = require('request');
 
 exports.importRaster = {
     payload: {
@@ -100,28 +101,56 @@ exports.createMosaic = {
     },
     handler: function (request, reply) {
         var data = request.payload;
+        var workspaceExists = false;
+        var coverageStoreExists = false;
 
         if (data.mosaic) {
             var cmd = '';
             async.series([
-                // // create workspace
-                // function (callback) {
-                //     cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
-                //     exec(cmd, function (error, stderr, stdout) {
-                //         console.log(error);
-                //         console.log(stderr);
-                //         console.log(stdout);
-                //         callback();
-                //     });
-                // },
-                // create datastore
+                // check if workspace exists
                 function (callback) {
-                    cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
-                    exec(cmd, function (error, stderr, stdout) {
-                        console.log(error);
-                        console.log(stderr);
-                        console.log(stdout);
-                        callback();
+                    request('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale', function (error, response, body) {
+                        if (error) {
+                            reply(boom.expectationFailed(error, stderr));
+                        } else {
+                            workspaceExists = response.statusCode === 200;
+                            if (!workspaceExists) {
+                                // create workspace
+                                cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<workspace><name>scale</name></workspace>" http://localhost/geoserver/rest/workspaces'
+                                exec(cmd, function (error, stderr, stdout) {
+                                    if (error) {
+                                        reply(boom.expectationFailed(error, stderr));
+                                    } else {
+                                        callback();
+                                    }
+                                });
+                            } else {
+                                callback();
+                            }
+                        }
+                    });
+                },
+                // check if coveragestore exists
+                function (callback) {
+                    request('http://admin:geoserver@localhost/geoserver/rest/workspaces/scale/coveragestores/' + data.mosaic, function (error, response, body) {
+                        if (error) {
+                            reply(boom.expectationFailed(error, stderr));
+                        } else {
+                            coverageStoreExists = response.statusCode === 200;
+                            if (!coverageStoreExists) {
+                                // create coveragestore
+                                cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-Type: text/xml" -d "<coverageStore><name>' + data.mosaic + '</name><workspace>scale</workspace><enabled>true</enabled></coverageStore>" http://localhost/geoserver/rest/workspaces/scale/coveragestores';
+                                exec(cmd, function (error, stderr, stdout) {
+                                    if (error) {
+                                        reply(boom.expectationFailed(error, stderr));
+                                    } else {
+                                        callback();
+                                    }
+                                });
+                            } else {
+                                callback();
+                            }
+                        }
                     });
                 }
             ],
