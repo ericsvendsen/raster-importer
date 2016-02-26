@@ -173,6 +173,7 @@ exports.updateMosaic = {
 
         if (data.file) {
             var name = data.file.hapi.filename,
+                zipName = name.split('.')[0],
                 path = __dirname + '/uploads/' + name,
                 file = fs.createWriteStream(path),
                 mosaic = data.mosaic;
@@ -187,13 +188,51 @@ exports.updateMosaic = {
             data.file.on('end', function () {
                 var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: image/tiff" -d @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + data.mosaic + '/external.imagemosaic';
                 console.log(cmd);
-                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                    if (error) {
-                        reply(boom.expectationFailed(error, stderr));
-                    } else {
-                        console.log(stdout);
-                        reply();
+                // exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                //     if (error) {
+                //         reply(boom.expectationFailed(error, stderr));
+                //     } else {
+                //         console.log(stdout);
+                //         reply();
+                //     }
+                // });
+
+                var cmd = '';
+                async.series([
+                    // zip file
+                    function (callback) {
+                        cmd = 'zip uploads/' + zipName + '.zip uploads/' + name;
+                        exec(cmd, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback();
+                            }
+                        });
+                    },
+                    // upload file
+                    function (callback) {
+                        cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: application/zip" --data-binary @uploads/' + zipName + '.zip http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + data.mosaic + '/external.imagemosaic';
+                        exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                            if (error) {
+                                reply(boom.expectationFailed(error, stderr));
+                            } else {
+                                callback(null, stdout);
+                            }
+                        });
                     }
+                ],
+                function (err, results) {
+                    // cleanup
+                    cmd = 'sudo rm uploads/' + name + ' && sudo rm uploads/' + zipName + '.zip';
+                    exec(cmd, function (error, stderr, stdout) {
+                        if (error) {
+                            reply(boom.expectationFailed(error, stderr));
+                        } else {
+                            console.log(stdout);
+                            reply();
+                        }
+                    });
                 });
             });
         }
