@@ -186,6 +186,7 @@ exports.updateMosaic = {
             data.file.pipe(file);
 
             data.file.on('end', function () {
+                console.log(name);
                 var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "/tifs/' + name + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + store + '/external.imagemosaic';
                 console.log(cmd);
                 exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
