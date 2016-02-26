@@ -174,35 +174,29 @@ exports.updateMosaic = {
         if (data.file) {
             var name = data.file.hapi.filename,
                 zipName = name.split('.')[0],
-                path = __dirname + '/uploads/' + name,
-                file = fs.createWriteStream(path),
-                mosaic = data.mosaic;
+                path = '/home/ubuntu/tifs/' + name,
+                //file = fs.createWriteStream(path),
+                store = data.store;
+
+            file.on('error', function (err) {
+                console.log(err);
+                reply(boom.expectationFailed(err));
+            });
 
             data.file.pipe(file);
 
             data.file.on('end', function () {
-                fs.createReadStream(path).pipe(noderequest.post('http://admin:geoserver@localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + mosaic + '/external.imagemosaic'));
+                var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "/tifs/' + name + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + store + '/external.imagemosaic';
+                console.log(cmd);
+                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                    if (error) {
+                        reply(boom.expectationFailed(error, stderr));
+                    } else {
+                        console.log(stdout);
+                        reply();
+                    }
+                });
             });
-
-            // file.on('error', function (err) {
-            //     console.log(err);
-            //     reply(boom.expectationFailed(err));
-            // });
-            //
-            // data.file.pipe(file);
-            //
-            // data.file.on('end', function () {
-            //     var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d @uploads/' + name + ' http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + data.mosaic + '/external.imagemosaic';
-            //     console.log(cmd);
-            //     exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-            //         if (error) {
-            //             reply(boom.expectationFailed(error, stderr));
-            //         } else {
-            //             console.log(stdout);
-            //             reply();
-            //         }
-            //     });
-            // });
         }
     }
 };
