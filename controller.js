@@ -175,7 +175,7 @@ exports.updateMosaic = {
             var name = data.file.hapi.filename,
                 zipName = name.split('.')[0],
                 path = '/home/ubuntu/tifs/' + name,
-                //file = fs.createWriteStream(path),
+                file = fs.createWriteStream(path),
                 store = data.store;
 
             file.on('error', function (err) {
