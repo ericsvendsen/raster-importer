@@ -178,9 +178,12 @@ exports.updateMosaic = {
                 //file = fs.createWriteStream(path),
                 mosaic = data.mosaic;
 
-            fs.createWriteStream(path).pipe(noderequest.post('http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + mosaic + '/external.imagemosaic').on('error', function (err) {
-                console.log(err);
-            });
+            fs.createWriteStream(path)
+                .pipe(noderequest.post('http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + mosaic + '/external.imagemosaic')
+                .on('error', function (err) {
+                    console.log(err);
+                })
+            );
 
             // file.on('error', function (err) {
             //     console.log(err);
