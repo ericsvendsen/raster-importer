@@ -187,13 +187,25 @@ exports.updateMosaic = {
 
             data.file.on('end', function () {
                 console.log(name);
-                var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///tifs/' + name + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + store + '/external.imagemosaic';
-                console.log(cmd);
-                exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
-                    if (error) {
-                        reply(boom.expectationFailed(error, stderr));
+                // var cmd = 'curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///tifs/' + name + '" http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + store + '/external.imagemosaic';
+                // console.log(cmd);
+                // exec(cmd, { maxBuffer: 314572800 }, function (error, stderr, stdout) {
+                //     if (error) {
+                //         reply(boom.expectationFailed(error, stderr));
+                //     } else {
+                //         console.log(stdout);
+                //         reply();
+                //     }
+                // });
+                noderequest.post('http://admin:geoserver@localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + store + '/external.imagemosaic', {
+                    headers: {
+                        'Content-type': 'text/plain'
+                    },
+                    body: 'file:///tifs/' + name
+                }, function (err) {
+                    if (err) {
+                        console.log(err);
                     } else {
-                        console.log(stdout);
                         reply();
                     }
                 });
