@@ -175,15 +175,14 @@ exports.updateMosaic = {
             var name = data.file.hapi.filename,
                 zipName = name.split('.')[0],
                 path = __dirname + '/uploads/' + name,
-                //file = fs.createWriteStream(path),
+                file = fs.createWriteStream(path),
                 mosaic = data.mosaic;
 
-            fs.createWriteStream(path)
-                .pipe(noderequest.post('http://localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + mosaic + '/external.imagemosaic')
-                .on('error', function (err) {
-                    console.log(err);
-                })
-            );
+            data.file.pipe(file);
+
+            data.file.on('end', function () {
+                fs.createReadStream(path).pipe(noderequest.post('http://admin:geoserver@localhost/geoserver/rest/workspaces/mosaic/coveragestores/' + mosaic + '/external.imagemosaic'));
+            });
 
             // file.on('error', function (err) {
             //     console.log(err);
