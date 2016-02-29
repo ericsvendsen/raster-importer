@@ -202,11 +202,10 @@ exports.updateMosaic = {
                         'Content-type': 'text/plain'
                     },
                     body: 'file:///tifs/' + name
-                }, function (err, stderr, stdout) {
+                }, function (err) {
                     if (err) {
-                        console.log(err);
+                        reply(boom.expectationFailed(err));
                     } else {
-                        console.log(stdout);
                         reply();
                     }
                 });
